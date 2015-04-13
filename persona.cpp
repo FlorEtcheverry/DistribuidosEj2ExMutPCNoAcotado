@@ -104,7 +104,7 @@ int main(int argc, char** argv) { //recibe nro puerta para entrar, nro puerta pa
             exit(1);
         }
         if (pid_hijo == 0) { //(hijo) clon
-            execlp(CLON_PERSONA_EXE,CLON_PERSONA_EXE,(char*) 0);
+            execlp(CLON_PERSONA_EXE,CLON_PERSONA_EXE,nro_puerta_salir,(char*) 0);
             (Logger::getLogger())->escribir(ERROR,string(" No se pudo ejecutar el clon de la persona ")+getpid()+".");
             Logger::destroy();
             exit(1);
@@ -115,6 +115,33 @@ int main(int argc, char** argv) { //recibe nro puerta para entrar, nro puerta pa
         kill(pid_hijo,SIGUSR1);
         
         //pedir salir
+        MENSAJE msj_salir;
+        msj_salir.mensaje = QUIERO_SALIR;
+        msj_salir.mtype = 0;
+        msj_salir.senderPid = getpid();
+        int res = msgsnd(cola_salir_escribir,&msj_salir,sizeof(MENSAJE)-sizeof(long),0);
+        if (res == -1){
+            (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+" No se pudo escribir en la cola de salir en la persona "+getpid()+".");
+            Logger::destroy();
+            exit(1);
+        }
+        (Logger::getLogger())->escribir(MSJ,string("Persona ")+getpid()+" quiere salir por la puerta"+puerta_salir+".");
+        
+        //leo rta
+        MENSAJE resp;
+        ssize_t leido = msgrcv(cola_salir_leer,&resp,sizeof(MENSAJE)-sizeof(long),getpid(),0);
+        if (leido == -1) {
+            (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+" No se pudo leer de la cola de salir en la persona "+getpid()+".");
+            Logger::destroy();
+            exit(1);
+        }
+        if (resp.mensaje == PODES_SALIR) {
+            (Logger::getLogger())->escribir(MSJ,string("Persona ")+getpid()+" ya salió del museo.");
+            Logger::destroy();
+            return 0;
+        } else {
+            (Logger::getLogger())->escribir(ERROR,string("Persona ")+getpid()+" no recibió autorización pasa salir.");
+        }
         
     }
     Logger::destroy();

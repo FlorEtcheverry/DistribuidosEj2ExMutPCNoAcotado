@@ -74,7 +74,7 @@ int main(int argc, char** argv) {
             Logger::destroy();
             exit(1);
         }
-        if (msj.mensaje == QUIERO_SALIR) {
+        if (msj.mensaje == QUIERO_SALIR) { //TODO: falta eso de matar a las puertas
             
             (Logger::getLogger())->escribir(MSJ,string("Persona con pid ")+msj.senderPid+" quiere salir del museo por la puerta "+puerta+".");
                 
