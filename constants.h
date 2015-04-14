@@ -55,6 +55,6 @@ static const int PODES_ENTRAR = 302;
 static const int MUSEO_CERRADO = 303;
 static const int PODES_SALIR = 304;
 
-
+static const int MAX_RAND = 100;
 #endif	/* CONSTANTS_H */
 

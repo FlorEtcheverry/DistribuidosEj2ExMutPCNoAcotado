@@ -23,5 +23,7 @@ project:
 	g++ -Wall ./build/Logger.o ./build/Semaforo.o puertaEntrada.cpp -o ./dist/puertaEntrada
 	g++ -Wall ./build/Logger.o ./build/Semaforo.o puertaSalida.cpp -o ./dist/puertaSalida
 	g++ -Wall ./build/Logger.o ./build/Semaforo.o destroyer.cpp -o ./dist/destroyer
+	g++ -Wall ./build/Logger.o ./build/Semaforo.o persona.cpp -o ./dist/persona
+	g++ -Wall ./build/Logger.o ./build/Semaforo.o clon.cpp -o ./dist/clon
 	g++ -Wall ./build/Logger.o ./build/Semaforo.o abrirMuseo.cpp -o ./dist/abrirMuseo
 	g++ -Wall ./build/Logger.o ./build/Semaforo.o cerrarMuseo.cpp -o ./dist/cerrarMuseo

@@ -72,7 +72,7 @@ int main(int argc, char** argv) {
         
         //eliminar cola entrada
         key_t key = ftok(PATH_IPC_COLAENTRADA.c_str(),i);
-        int id_cola = msgget(key,0);
+        int id_cola = msgget(key,0666);
         if (id_cola == -1) {
             (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+" No se pudo obtener la cola de entrada para la puerta "+puerta+" para eliminarla.");
             Logger::destroy();
@@ -88,7 +88,7 @@ int main(int argc, char** argv) {
 
         //eliminar cola entrada respuesta
         key = ftok(PATH_IPC_COLAENTRADA_RESP.c_str(),i);
-        id_cola = msgget(key,0);
+        id_cola = msgget(key,0666);
         if (id_cola == -1) {
             (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+" No se pudo obtener la cola de entrada de respuesta para la puerta "+puerta+" para eliminarla.");
             Logger::destroy();
@@ -104,7 +104,7 @@ int main(int argc, char** argv) {
 
         //eliminar cola de salida
         key = ftok(PATH_IPC_COLASALIDA.c_str(),i);
-        id_cola = msgget(key,0);
+        id_cola = msgget(key,0666);
         if (id_cola == -1) {
             (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+" No se pudo obtener la cola de salida para la puerta "+puerta+" para eliminarla.");
             Logger::destroy();
@@ -120,7 +120,7 @@ int main(int argc, char** argv) {
 
         //eliminar cola salida respuesta
         key = ftok(PATH_IPC_COLASALIDA_RESP.c_str(),i);
-        id_cola = msgget(key,0);
+        id_cola = msgget(key,0666);
         if (id_cola == -1) {
             (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+" No se pudo obtener la cola de salida de respuesta para la puerta "+puerta+" para eliminarla.");
             Logger::destroy();
@@ -134,6 +134,15 @@ int main(int argc, char** argv) {
         }
         Logger::getLogger()->escribir(MSJ,"Eliminada exitosamente cola de salida de respuesta para puerta "+puerta+".");
 
+    }
+    
+    //eliminar cola de museo cerrado
+    int key = ftok(PATH_IPC_COLAMUSEOCERRADO.c_str(),COLA_MUSEO_CERR);
+    int cola_museo_cerrado = msgget(key,0666);
+    if (cola_museo_cerrado == -1) {
+        (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+" No se pudo obtener la cola de aviso de museo cerrado para eliminarla.");
+        Logger::destroy();
+        exit(1);
     }
     
     

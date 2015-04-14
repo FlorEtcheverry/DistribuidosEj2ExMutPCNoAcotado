@@ -217,9 +217,54 @@ int main(int argc, char** argv) {
     }
     (Logger::getLogger())->escribir(MSJ,string("Terminado el proceso de creación de las puertas."));
     
-    /*crear cola de museo cerrado*/ //TODO: cola
+    /*crear cola de museo cerrado*/
+    int key = ftok(PATH_IPC_COLAMUSEOCERRADO.c_str(),COLA_MUSEO_CERR);
+    int cola_museo_cerrado = msgget(key,IPC_CREAT|IPC_EXCL|0666);
+    if (cola_museo_cerrado == -1) {
+        (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+" No se pudo crear la cola de aviso de museo cerrado.");
+        Logger::destroy();
+        exit(1);
+    }
     
-    /*crear personas*/ //TODO: personas
+    /*crear personas*/
+    srand (time(NULL));
+    
+    for (int i=0;i<=cant_visitantes;i++){
+        sprintf(nro_persona,"%d",i);
+        (Logger::getLogger())->escribir(MSJ,string("Creando puerta de entrada numero ")+nro_puerta+".");
+        
+        
+        //puerta entrar
+         int puerta_entrada = (rand() % cant_puertas) + 1;
+         
+         //puerta salir
+         int puerta_salida = (rand() % cant_puertas) + 1;
+         
+         //tiempo en museo
+         int paseando = (rand() % MAX_RAND) + 1;
+         
+         
+         /*
+          * 
+          * static char nro_puerta[MAX_DIG_PUERTA];
+          * 
+        int child_pid = fork();
+        if (child_pid < 0) {
+            (Logger::getLogger())->escribir(ERROR,string(" No se pudo crear la persona de entrada ")+nro_puerta+".");
+            Logger::destroy();
+            exit(1);
+        }
+        if (child_pid == 0) { //(hijo) puerta de entrada
+            execlp(PUERTA_ENTRADA_EXE,PUERTA_ENTRADA_EXE,nro_puerta,(char*) 0);
+            (Logger::getLogger())->escribir(ERROR,string(" No se pudo ejecutar la puerta de entrada ")+nro_puerta+".");
+            Logger::destroy();
+            exit(1);
+        }
+        */
+         
+        
+        
+    }
     
     Logger::destroy();
     return 0;
