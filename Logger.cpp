@@ -34,7 +34,7 @@ void Logger::destroy(){
     delete instancia;
 }
 
-void Logger::escribir(int type,std::string mensaje){ //TODO timestamp y distintos tipos de escribir (error, msj)
+void Logger::escribir(int type,std::string mensaje){
     
     char date[20];
     std::string msj;

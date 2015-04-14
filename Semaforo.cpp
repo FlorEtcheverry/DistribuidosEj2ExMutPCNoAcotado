@@ -30,7 +30,7 @@ void Semaforo::init(int initial_value){
             exit(1);
 	}
 }
-void Semaforo::p(){  //TODO errores de p y v? devolver? exit?
+void Semaforo::p(){
     struct sembuf operacion ;
     operacion.sem_num = 0; // nro sem
     operacion.sem_op = -1;

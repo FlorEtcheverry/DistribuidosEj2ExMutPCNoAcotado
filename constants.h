@@ -12,6 +12,7 @@ typedef struct {
     int cant_personas;
     int abierto;
     int max_personas;
+    int cant_puertas;
 } MUSEO;
 
 typedef struct {

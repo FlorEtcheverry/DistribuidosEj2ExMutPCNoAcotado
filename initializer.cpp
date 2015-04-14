@@ -52,6 +52,7 @@ void cargarConfig(MUSEO* museo_shm,int* cant_visitantes,int* cant_puertas){
     
     getline(conf_file,linea);
     *cant_puertas = atoi(linea.c_str());
+     (museo_shm->cant_puertas) = atoi(linea.c_str());
     Logger::getLogger()->escribir(MSJ,string("Hay ")+linea.c_str()+" puertas.");
         
     conf_file.close(); //TODO: chequeo de errores
