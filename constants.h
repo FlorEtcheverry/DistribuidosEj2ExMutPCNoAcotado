@@ -21,7 +21,7 @@ typedef struct {
     int mensaje; 
 } MENSAJE;
 
-static const int MUSEO_INICIAL = 0; //empieza en 0 -no entra nadie hasta que abran el museo
+static const int MUSEO_INICIAL = 1;
 static const int SEM_HAY_LUGAR = 1;
 
 static const std::string PATH_LOG = "./log.log";
@@ -44,9 +44,11 @@ static const int SHM = 20;
 static const int COLA_MUSEO_CERR = 30;
 
 static const int MAX_DIG_PUERTA = 11;
+static const int MAX_DIG_PID = 11;
 
 static const char* PUERTA_ENTRADA_EXE = "./puertaEntrada";
 static const char* PUERTA_SALIDA_EXE = "./puertaSalida";
+static const char* PERSONA_EXE = "./persona";
 static const char* CLON_PERSONA_EXE = "./clon";
 
 static const int QUIERO_ENTRAR = 300;

@@ -6,6 +6,10 @@
  */
 
 #include <cstdlib>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <sys/msg.h>
 #include "Logger.h"
 #include "Semaforo.h"
 
@@ -76,7 +80,9 @@ int main(int argc, char** argv) {
         }
         if (msj.mensaje == QUIERO_SALIR) { //TODO: falta eso de matar a las puertas
             
-            (Logger::getLogger())->escribir(MSJ,string("Persona con pid ")+msj.senderPid+" quiere salir del museo por la puerta "+puerta+".");
+            static char sender[MAX_DIG_PID];
+            sprintf(sender,"%d",msj.senderPid);
+            (Logger::getLogger())->escribir(MSJ,string("Persona con pid ")+sender+" quiere salir del museo por la puerta "+puerta+".");
                 
             mutex.p();
             
@@ -103,7 +109,7 @@ int main(int argc, char** argv) {
                 Logger::destroy();
                 exit(1);
             }
-            (Logger::getLogger())->escribir(MSJ,string("Respondido a persona con pid ")+msj.senderPid+" que puede salir del museo por la puerta "+puerta+".");
+            (Logger::getLogger())->escribir(MSJ,string("Respondido a persona con pid ")+sender+" que puede salir del museo por la puerta "+puerta+".");
             mutex.v();
         }
     }

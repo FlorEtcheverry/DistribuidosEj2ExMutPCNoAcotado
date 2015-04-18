@@ -70,7 +70,7 @@ int crearColaEntrada(int nro_puerta) {
         Logger::destroy();
         exit(1);
     }
-    Logger::getLogger()->escribir(MSJ,"Creada exitosamente cola de entrada para puerta "+puerta+".");
+    Logger::getLogger()->escribir(MSJ,string("Creada exitosamente cola de entrada para puerta ")+puerta+".");
     return id_cola;
 }
 
@@ -85,7 +85,7 @@ int crearColaEntradaRta(int nro_puerta) {
         Logger::destroy();
         exit(1);
     }
-    Logger::getLogger()->escribir(MSJ,"Creada exitosamente cola de entrada de respuesta para puerta "+puerta+".");
+    Logger::getLogger()->escribir(MSJ,string("Creada exitosamente cola de entrada de respuesta para puerta ")+puerta+".");
     return id_cola;
 }
 
@@ -101,7 +101,7 @@ int crearColaSalida(int nro_puerta) {
         Logger::destroy();
         exit(1);
     }
-    Logger::getLogger()->escribir(MSJ,"Creada exitosamente cola de salida para puerta "+puerta+".");
+    Logger::getLogger()->escribir(MSJ,string("Creada exitosamente cola de salida para puerta ")+puerta+".");
     return id_cola;
 }
 
@@ -116,7 +116,7 @@ int crearColaSalidaRta(int nro_puerta) {
         Logger::destroy();
         exit(1);
     }
-    Logger::getLogger()->escribir(MSJ,"Creada exitosamente cola de salida de respuesta para puerta "+puerta+".");
+    Logger::getLogger()->escribir(MSJ,string("Creada exitosamente cola de salida de respuesta para puerta ")+puerta+".");
     return id_cola;
 }
 
@@ -218,7 +218,7 @@ int main(int argc, char** argv) {
     (Logger::getLogger())->escribir(MSJ,string("Terminado el proceso de creación de las puertas."));
     
     /*crear cola de museo cerrado*/
-    int key = ftok(PATH_IPC_COLAMUSEOCERRADO.c_str(),COLA_MUSEO_CERR);
+    key = ftok(PATH_IPC_COLAMUSEOCERRADO.c_str(),COLA_MUSEO_CERR);
     int cola_museo_cerrado = msgget(key,IPC_CREAT|IPC_EXCL|0666);
     if (cola_museo_cerrado == -1) {
         (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+" No se pudo crear la cola de aviso de museo cerrado.");
@@ -227,43 +227,45 @@ int main(int argc, char** argv) {
     }
     
     /*crear personas*/
+    int pid_hijo_persona;
+    static char nro_persona[MAX_DIG_PUERTA];
     srand (time(NULL));
     
     for (int i=0;i<=cant_visitantes;i++){
         sprintf(nro_persona,"%d",i);
-        (Logger::getLogger())->escribir(MSJ,string("Creando puerta de entrada numero ")+nro_puerta+".");
-        
-        
+        cout << i <<endl;
+        (Logger::getLogger())->escribir(MSJ,string("Creando persona numero ")+nro_persona+".");
+                
         //puerta entrar
-         int puerta_entrada = (rand() % cant_puertas) + 1;
+        int n_puerta_entrada = (rand() % cant_puertas);
+        static char puerta_entrada[MAX_DIG_PUERTA];
+        sprintf(puerta_entrada,"%d",n_puerta_entrada);
          
-         //puerta salir
-         int puerta_salida = (rand() % cant_puertas) + 1;
+        //puerta salir
+        int n_puerta_salida = (rand() % cant_puertas);
+        static char puerta_salida[MAX_DIG_PUERTA];
+        sprintf(puerta_salida,"%d",n_puerta_salida);
          
-         //tiempo en museo
-         int paseando = (rand() % MAX_RAND) + 1;
+        //tiempo en museo
+        int n_paseando = (rand() % MAX_RAND) + 1;
+        static char paseando[MAX_DIG_PUERTA];
+        sprintf(paseando,"%d",n_paseando);
+        
          
-         
-         /*
-          * 
-          * static char nro_puerta[MAX_DIG_PUERTA];
-          * 
-        int child_pid = fork();
-        if (child_pid < 0) {
-            (Logger::getLogger())->escribir(ERROR,string(" No se pudo crear la persona de entrada ")+nro_puerta+".");
+        pid_hijo_persona = fork();
+        if (pid_hijo_persona < 0) {
+            (Logger::getLogger())->escribir(ERROR,string(" No se pudo crear la persona")+nro_persona+".");
             Logger::destroy();
             exit(1);
         }
-        if (child_pid == 0) { //(hijo) puerta de entrada
-            execlp(PUERTA_ENTRADA_EXE,PUERTA_ENTRADA_EXE,nro_puerta,(char*) 0);
-            (Logger::getLogger())->escribir(ERROR,string(" No se pudo ejecutar la puerta de entrada ")+nro_puerta+".");
+        if (pid_hijo_persona == 0) { //(hijo) persona
+            execlp(PERSONA_EXE,PERSONA_EXE,puerta_entrada,puerta_salida,paseando,(char*) 0);
+            (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+string(" No se pudo ejecutar la persona ")+nro_persona+".");
             Logger::destroy();
             exit(1);
         }
-        */
+        sleep((rand() % 2) + 1);
          
-        
-        
     }
     
     Logger::destroy();

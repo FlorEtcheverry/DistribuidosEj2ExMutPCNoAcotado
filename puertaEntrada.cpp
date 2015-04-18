@@ -6,6 +6,10 @@
  */
 
 #include <cstdlib>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <sys/msg.h>
 #include "Logger.h"
 #include "Semaforo.h"
 
@@ -76,7 +80,9 @@ int main(int argc, char** argv) {
         }
         if (msj.mensaje == QUIERO_ENTRAR) {
             
-            (Logger::getLogger())->escribir(MSJ,string("Persona con pid ")+msj.senderPid+" quiere entrar al museo por la puerta "+puerta+".");
+            static char sender[MAX_DIG_PID];
+            sprintf(sender,"%d",msj.senderPid);
+            (Logger::getLogger())->escribir(MSJ,string("Persona con pid ")+sender+" quiere entrar al museo por la puerta "+puerta+".");
                 
             sem_hay_lugar.p(); 
             mutex.p();
@@ -102,7 +108,9 @@ int main(int argc, char** argv) {
                     Logger::destroy();
                     exit(1);
                 }
-                (Logger::getLogger())->escribir(MSJ,string("Respondido a persona con pid ")+msj.senderPid+" que puede entrar al museo por la puerta "+puerta+".");
+                static char sender[MAX_DIG_PID];
+                sprintf(sender,"%d",msj.senderPid);
+                (Logger::getLogger())->escribir(MSJ,string("Respondido a persona con pid ")+sender+" que puede entrar al museo por la puerta "+puerta+".");
                 
             } else { //museo cerrado
                 //le mando el msj de que el museo esta cerrado
@@ -117,7 +125,9 @@ int main(int argc, char** argv) {
                     Logger::destroy();
                     exit(1);
                 }
-                (Logger::getLogger())->escribir(MSJ,string("Respondido a persona con pid ")+msj.senderPid+" que no puede entrar al museo por la puerta "+puerta+", porque está cerrado.");
+                static char sender[MAX_DIG_PID];
+                sprintf(sender,"%d",msj.senderPid);
+                (Logger::getLogger())->escribir(MSJ,string("Respondido a persona con pid ")+sender+" que no puede entrar al museo por la puerta "+puerta+", porque está cerrado.");
                 //pongo que hay lugar en el museo
                 sem_hay_lugar.v();
             }

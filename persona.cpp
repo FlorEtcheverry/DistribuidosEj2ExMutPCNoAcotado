@@ -7,6 +7,12 @@
 
 #include <cstdlib>
 #include <signal.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <sys/msg.h>
+#include <string.h>
+#include <errno.h>
 #include "Logger.h"
 
 using namespace std;
@@ -24,7 +30,10 @@ int main(int argc, char** argv) { //recibe nro puerta para entrar, nro puerta pa
     int nro_puerta_salir = atoi(argv[2]);
     static char* tiempo_paseando = argv[3];
     int nro_tiempo_paseando = atoi(argv[3]);
-    (Logger::getLogger())->escribir(MSJ,string("Hola! Soy persona ")+getpid()+". Quiero entrar por la puerta numero "+puerta_entrar+" y salir por la "+puerta_salir+". Voy a pasear "+tiempo_paseando+" segs.");
+    
+    static char pid[MAX_DIG_PID];
+    sprintf(pid,"%d",getpid());
+    (Logger::getLogger())->escribir(MSJ,string("Hola! Soy persona ")+pid+". Quiero entrar por la puerta numero "+puerta_entrar+" y salir por la "+puerta_salir+". Voy a pasear "+tiempo_paseando+" segs.");
       
     
     /*obtener colas entrada*/
@@ -32,7 +41,7 @@ int main(int argc, char** argv) { //recibe nro puerta para entrar, nro puerta pa
     int key = ftok(PATH_IPC_COLAENTRADA.c_str(),nro_puerta_entrar);
     int cola_entrar_escribir = msgget(key,0666);
     if (cola_entrar_escribir == -1) {
-        (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+" No se pudo obtener la cola de entrada para la persona "+getpid()+".");
+        (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+" No se pudo obtener la cola de entrada para la persona "+pid+".");
         Logger::destroy();
         exit(1);
     }
@@ -40,7 +49,7 @@ int main(int argc, char** argv) { //recibe nro puerta para entrar, nro puerta pa
     key = ftok(PATH_IPC_COLAENTRADA_RESP.c_str(),nro_puerta_entrar);
     int cola_entrar_leer = msgget(key,0666);
     if (cola_entrar_leer == -1) {
-        (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+" No se pudo obtener la cola de entrada a leer para la persona "+getpid()+".");
+        (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+" No se pudo obtener la cola de entrada a leer para la persona "+pid+".");
         Logger::destroy();
         exit(1);
     }
@@ -50,7 +59,7 @@ int main(int argc, char** argv) { //recibe nro puerta para entrar, nro puerta pa
     key = ftok(PATH_IPC_COLASALIDA.c_str(),nro_puerta_salir);
     int cola_salir_escribir = msgget(key,0666);
     if (cola_salir_escribir == -1) {
-        (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+" No se pudo obtener la cola de salida para la persona "+getpid()+".");
+        (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+" No se pudo obtener la cola de salida para la persona "+pid+".");
         Logger::destroy();
         exit(1);
     }
@@ -58,7 +67,7 @@ int main(int argc, char** argv) { //recibe nro puerta para entrar, nro puerta pa
     key = ftok(PATH_IPC_COLASALIDA_RESP.c_str(),nro_puerta_salir);
     int cola_salir_leer = msgget(key,0666);
     if (cola_salir_leer == -1) {
-        (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+" No se pudo obtener la cola de salida a leer para la persona "+getpid()+".");
+        (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+" No se pudo obtener la cola de salida a leer para la persona "+pid+".");
         Logger::destroy();
         exit(1);
     }
@@ -67,29 +76,29 @@ int main(int argc, char** argv) { //recibe nro puerta para entrar, nro puerta pa
     key = ftok(PATH_IPC_COLAMUSEOCERRADO.c_str(),COLA_MUSEO_CERR);
     int cola_museo_cerrado = msgget(key,0666);
     if (cola_museo_cerrado == -1) {
-        (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+" No se pudo obtener la cola de aviso de museo cerrado para la persona "+getpid()+".");
+        (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+" No se pudo obtener la cola de aviso de museo cerrado para la persona "+pid+".");
         Logger::destroy();
         exit(1);
     }
     
     //pedir entrar
     MENSAJE peticion_entrar;
-    peticion_entrar.mtype = 0;
+    peticion_entrar.mtype = 1;
     peticion_entrar.mensaje = QUIERO_ENTRAR;
     peticion_entrar.senderPid = getpid();
-    int res = msgsnd(cola_entrar_escribir,&peticion_entrar,sizeof(MENSAJE)-sizeof(long),0);
+    int res = msgsnd(cola_entrar_escribir,&peticion_entrar,sizeof(MENSAJE)-sizeof(long),0); //TODO: tira error en q no pudo escribir
     if (res == -1){
-        (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+" No se pudo escribir en la cola de entrada en la persona "+getpid()+".");
+        (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+" No se pudo escribir en la cola de entrada en la persona "+pid+".");
         Logger::destroy();
         exit(1);
     }
-    (Logger::getLogger())->escribir(MSJ,string("Persona ")+getpid()+" pidió que quiere entrar al museo por la puerta "+puerta_entrar+".");
+    (Logger::getLogger())->escribir(MSJ,string("Persona ")+pid+" pidió que quiere entrar al museo por la puerta "+puerta_entrar+".");
     
     //leer respuesta
     MENSAJE rta;
-    ssize_t res = msgrcv(cola_entrar_leer,&rta,sizeof(MENSAJE)-sizeof(long),getpid(),0);
+    res = msgrcv(cola_entrar_leer,&rta,sizeof(MENSAJE)-sizeof(long),getpid(),0);
     if (res == -1) {
-        (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+" No se pudo leer de la cola de entrada en la persona "+getpid()+".");
+        (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+" No se pudo leer de la cola de entrada en la persona "+pid+".");
         Logger::destroy();
         exit(1);
     }
@@ -99,48 +108,49 @@ int main(int argc, char** argv) { //recibe nro puerta para entrar, nro puerta pa
         int pid_hijo;
         pid_hijo = fork();
         if (pid_hijo < 0) {
-            (Logger::getLogger())->escribir(ERROR,string(" No se pudo crear el clon de la persona ")+getpid()+".");
+            (Logger::getLogger())->escribir(ERROR,string(" No se pudo crear el clon de la persona ")+pid+".");
             Logger::destroy();
             exit(1);
         }
         if (pid_hijo == 0) { //(hijo) clon
             execlp(CLON_PERSONA_EXE,CLON_PERSONA_EXE,nro_puerta_salir,(char*) 0);
-            (Logger::getLogger())->escribir(ERROR,string(" No se pudo ejecutar el clon de la persona ")+getpid()+".");
+            (Logger::getLogger())->escribir(ERROR,string(" No se pudo ejecutar el clon de la persona ")+pid+".");
             Logger::destroy();
             exit(1);
         }
         
         // (padre) persona
+        (Logger::getLogger())->escribir(MSJ,string("Persona ")+pid+": Ya entré al museo! Voy a pasear un rato.");
         sleep (nro_tiempo_paseando);
         kill(pid_hijo,SIGUSR1);
         
         //pedir salir
         MENSAJE msj_salir;
         msj_salir.mensaje = QUIERO_SALIR;
-        msj_salir.mtype = 0;
+        msj_salir.mtype = 1;
         msj_salir.senderPid = getpid();
         int res = msgsnd(cola_salir_escribir,&msj_salir,sizeof(MENSAJE)-sizeof(long),0);
         if (res == -1){
-            (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+" No se pudo escribir en la cola de salir en la persona "+getpid()+".");
+            (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+" No se pudo escribir en la cola de salir en la persona "+pid+".");
             Logger::destroy();
             exit(1);
         }
-        (Logger::getLogger())->escribir(MSJ,string("Persona ")+getpid()+" quiere salir por la puerta"+puerta_salir+".");
+        (Logger::getLogger())->escribir(MSJ,string("Persona ")+pid+" quiere salir por la puerta "+puerta_salir+".");
         
         //leo rta
         MENSAJE resp;
         ssize_t leido = msgrcv(cola_salir_leer,&resp,sizeof(MENSAJE)-sizeof(long),getpid(),0);
         if (leido == -1) {
-            (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+" No se pudo leer de la cola de salir en la persona "+getpid()+".");
+            (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+" No se pudo leer de la cola de salir en la persona "+pid+".");
             Logger::destroy();
             exit(1);
         }
         if (resp.mensaje == PODES_SALIR) {
-            (Logger::getLogger())->escribir(MSJ,string("Persona ")+getpid()+" ya salió del museo.");
+            (Logger::getLogger())->escribir(MSJ,string("Persona ")+pid+" ya salió del museo.");
             Logger::destroy();
             return 0;
         } else {
-            (Logger::getLogger())->escribir(ERROR,string("Persona ")+getpid()+" no recibió autorización pasa salir.");
+            (Logger::getLogger())->escribir(ERROR,string("Persona ")+pid+" no recibió autorización pasa salir.");
         }
         
     }

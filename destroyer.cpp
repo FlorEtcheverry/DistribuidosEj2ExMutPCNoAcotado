@@ -7,6 +7,9 @@
 
 #include <cstdlib>
 #include <sys/shm.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
 #include "Semaforo.h"
 #include "Logger.h"
 
@@ -25,8 +28,8 @@ int main(int argc, char** argv) {
     (Logger::getLogger())->escribir(MSJ,"Mutex destruido.");
     
     //destruir sem museo lleno
-    Semaforo mutex = Semaforo(PATH_IPC_MUSEOLLENO.c_str());
-    mutex.destroy();
+    Semaforo museo_lleno = Semaforo(PATH_IPC_MUSEOLLENO.c_str());
+    museo_lleno.destroy();
     (Logger::getLogger())->escribir(MSJ,"Semaforo de museo lleno destruido.");
     
     //obtener memoria compartida
@@ -56,7 +59,7 @@ int main(int argc, char** argv) {
     }
     
     //elimino la memoria
-    int res = shmctl(shm_id,IPC_RMID,NULL);
+    res = shmctl(shm_id,IPC_RMID,NULL);
     if (res == -1) {
         (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+" No se pudo destruir la memoria compartida.");
         Logger::destroy();
@@ -84,7 +87,7 @@ int main(int argc, char** argv) {
             Logger::destroy();
             exit(1);
         }
-        Logger::getLogger()->escribir(MSJ,"Eliminada exitosamente cola de entrada para puerta "+puerta+".");
+        Logger::getLogger()->escribir(MSJ,string("Eliminada exitosamente cola de entrada para puerta ")+puerta+".");
 
         //eliminar cola entrada respuesta
         key = ftok(PATH_IPC_COLAENTRADA_RESP.c_str(),i);
@@ -100,7 +103,7 @@ int main(int argc, char** argv) {
             Logger::destroy();
             exit(1);
         }
-        Logger::getLogger()->escribir(MSJ,"Eliminada exitosamente cola de entrada de respuesta para puerta "+puerta+".");
+        Logger::getLogger()->escribir(MSJ,string("Eliminada exitosamente cola de entrada de respuesta para puerta ")+puerta+".");
 
         //eliminar cola de salida
         key = ftok(PATH_IPC_COLASALIDA.c_str(),i);
@@ -116,7 +119,7 @@ int main(int argc, char** argv) {
             Logger::destroy();
             exit(1);
         }
-        Logger::getLogger()->escribir(MSJ,"Eliminada exitosamente cola de salida para puerta "+puerta+".");
+        Logger::getLogger()->escribir(MSJ,string("Eliminada exitosamente cola de salida para puerta ")+puerta+".");
 
         //eliminar cola salida respuesta
         key = ftok(PATH_IPC_COLASALIDA_RESP.c_str(),i);
@@ -132,18 +135,25 @@ int main(int argc, char** argv) {
             Logger::destroy();
             exit(1);
         }
-        Logger::getLogger()->escribir(MSJ,"Eliminada exitosamente cola de salida de respuesta para puerta "+puerta+".");
+        Logger::getLogger()->escribir(MSJ,string("Eliminada exitosamente cola de salida de respuesta para puerta ")+puerta+".");
 
     }
     
     //eliminar cola de museo cerrado
-    int key = ftok(PATH_IPC_COLAMUSEOCERRADO.c_str(),COLA_MUSEO_CERR);
+    key = ftok(PATH_IPC_COLAMUSEOCERRADO.c_str(),COLA_MUSEO_CERR);
     int cola_museo_cerrado = msgget(key,0666);
     if (cola_museo_cerrado == -1) {
         (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+" No se pudo obtener la cola de aviso de museo cerrado para eliminarla.");
         Logger::destroy();
         exit(1);
     }
+    res = msgctl(cola_museo_cerrado,IPC_RMID,NULL);
+    if (res == -1) {
+        (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+" No se pudo destruir la cola de aviso de museo cerrado.");
+        Logger::destroy();
+        exit(1);
+    }
+    Logger::getLogger()->escribir(MSJ,string("Eliminada exitosamente cola de de aviso de museo cerrado."));
     
     
     

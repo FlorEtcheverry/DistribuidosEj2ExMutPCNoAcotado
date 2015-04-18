@@ -6,7 +6,10 @@
  */
 
 #include <cstdlib>
+#include <sys/types.h>
+#include <sys/ipc.h>
 #include <sys/shm.h>
+#include <sys/msg.h>
 #include "Semaforo.h"
 #include "Logger.h"
 
