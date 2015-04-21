@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
         if (msj.mensaje == QUIERO_ENTRAR) {
             
             static char sender[MAX_DIG_PID];
-            sprintf(sender,"%d",msj.senderPid);
+            sprintf(sender,"%ld",msj.senderPid);
             (Logger::getLogger())->escribir(MSJ,string("Persona con pid ")+sender+" quiere entrar al museo por la puerta "+puerta+".");
                 
             sem_hay_lugar.p(); 
@@ -109,7 +109,7 @@ int main(int argc, char** argv) {
                     exit(1);
                 }
                 static char sender[MAX_DIG_PID];
-                sprintf(sender,"%d",msj.senderPid);
+                sprintf(sender,"%ld",msj.senderPid);
                 (Logger::getLogger())->escribir(MSJ,string("Respondido a persona con pid ")+sender+" que puede entrar al museo por la puerta "+puerta+".");
                 
             } else { //museo cerrado
@@ -126,7 +126,7 @@ int main(int argc, char** argv) {
                     exit(1);
                 }
                 static char sender[MAX_DIG_PID];
-                sprintf(sender,"%d",msj.senderPid);
+                sprintf(sender,"%ld",msj.senderPid);
                 (Logger::getLogger())->escribir(MSJ,string("Respondido a persona con pid ")+sender+" que no puede entrar al museo por la puerta "+puerta+", porque está cerrado.");
                 //pongo que hay lugar en el museo
                 sem_hay_lugar.v();

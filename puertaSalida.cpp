@@ -81,7 +81,7 @@ int main(int argc, char** argv) {
         if (msj.mensaje == QUIERO_SALIR) { //TODO: falta eso de matar a las puertas
             
             static char sender[MAX_DIG_PID];
-            sprintf(sender,"%d",msj.senderPid);
+            sprintf(sender,"%ld",msj.senderPid);
             (Logger::getLogger())->escribir(MSJ,string("Persona con pid ")+sender+" quiere salir del museo por la puerta "+puerta+".");
                 
             mutex.p();

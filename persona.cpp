@@ -86,7 +86,7 @@ int main(int argc, char** argv) { //recibe nro puerta para entrar, nro puerta pa
     peticion_entrar.mtype = 1;
     peticion_entrar.mensaje = QUIERO_ENTRAR;
     peticion_entrar.senderPid = getpid();
-    int res = msgsnd(cola_entrar_escribir,&peticion_entrar,sizeof(MENSAJE)-sizeof(long),0); //TODO: tira error en q no pudo escribir
+    int res = msgsnd(cola_entrar_escribir,&peticion_entrar,sizeof(MENSAJE)-sizeof(long),0); //TODO: tira error en q no pudo escribir DONE:(ya no)
     if (res == -1){
         (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+" No se pudo escribir en la cola de entrada en la persona "+pid+".");
         Logger::destroy();
@@ -113,10 +113,10 @@ int main(int argc, char** argv) { //recibe nro puerta para entrar, nro puerta pa
             exit(1);
         }
         if (pid_hijo == 0) { //(hijo) clon
-            execlp(CLON_PERSONA_EXE,CLON_PERSONA_EXE,nro_puerta_salir,(char*) 0);
-            (Logger::getLogger())->escribir(ERROR,string(" No se pudo ejecutar el clon de la persona ")+pid+".");
+            execlp(CLON_PERSONA_EXE,CLON_PERSONA_EXE,puerta_salir,(char*) 0);
+            (Logger::getLogger())->escribir(ERROR,string(strerror(errno))+string(" No se pudo ejecutar el clon de la persona ")+pid+".");
             Logger::destroy();
-            exit(1);
+            exit(1); // TODO: el exec tira bad addres, no ejecuta. pero la persona no se muere (despues pide salir))
         }
         
         // (padre) persona

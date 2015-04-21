@@ -215,7 +215,7 @@ int main(int argc, char** argv) {
             exit(1);
         }
     }
-    (Logger::getLogger())->escribir(MSJ,string("Terminado el proceso de creación de las puertas."));
+    (Logger::getLogger())->escribir(MSJ,string("---Terminada la creación de las puertas.---"));
     
     /*crear cola de museo cerrado*/
     key = ftok(PATH_IPC_COLAMUSEOCERRADO.c_str(),COLA_MUSEO_CERR);
@@ -225,15 +225,16 @@ int main(int argc, char** argv) {
         Logger::destroy();
         exit(1);
     }
+    Logger::getLogger()->escribir(MSJ,"Creada la cola de aviso de museo cerrado.");
     
     /*crear personas*/
     int pid_hijo_persona;
     static char nro_persona[MAX_DIG_PUERTA];
-    srand (time(NULL));
+    srand(time(NULL));
     
+    (Logger::getLogger())->escribir(MSJ,string("--Creando personas---"));
     for (int i=0;i<=cant_visitantes;i++){
         sprintf(nro_persona,"%d",i);
-        cout << i <<endl;
         (Logger::getLogger())->escribir(MSJ,string("Creando persona numero ")+nro_persona+".");
                 
         //puerta entrar
@@ -264,10 +265,9 @@ int main(int argc, char** argv) {
             Logger::destroy();
             exit(1);
         }
-        sleep((rand() % 2) + 1);
-         
+        sleep((rand() % 2) + 1); //tiempo entre una persona y otra
     }
-    
+    (Logger::getLogger())->escribir(MSJ,string("---Finalizada la creación de personas.---"));
     Logger::destroy();
     return 0;
 }
