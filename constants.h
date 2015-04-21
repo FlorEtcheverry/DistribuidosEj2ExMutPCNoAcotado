@@ -50,6 +50,7 @@ static const char* PUERTA_ENTRADA_EXE = "./puertaEntrada";
 static const char* PUERTA_SALIDA_EXE = "./puertaSalida";
 static const char* PERSONA_EXE = "./persona";
 static const char* CLON_PERSONA_EXE = "./clon";
+static const char* DESTROYER_EXE = "./destroyer";
 
 static const int QUIERO_ENTRAR = 300;
 static const int QUIERO_SALIR = 301;

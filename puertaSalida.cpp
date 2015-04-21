@@ -78,7 +78,7 @@ int main(int argc, char** argv) {
             Logger::destroy();
             exit(1);
         }
-        if (msj.mensaje == QUIERO_SALIR) { //TODO: falta eso de matar a las puertas
+        if (msj.mensaje == QUIERO_SALIR) { 
             
             static char sender[MAX_DIG_PID];
             sprintf(sender,"%ld",msj.senderPid);
@@ -88,7 +88,7 @@ int main(int argc, char** argv) {
             
             if (museo_shm->cant_personas == museo_shm->max_personas) { //el museo está lleno
                 
-                (museo_shm->cant_personas)--; //saco a la persona
+                (museo_shm->cant_personas)--; //saco a la persona TODO: poner msj cuando alguien entra y sale
                 
                 //pongo q hay lugar en el museo
                 sem_hay_lugar.v();
@@ -110,6 +110,13 @@ int main(int argc, char** argv) {
                 exit(1);
             }
             (Logger::getLogger())->escribir(MSJ,string("Respondido a persona con pid ")+sender+" que puede salir del museo por la puerta "+puerta+".");
+            if ((!museo_shm->abierto) && (museo_shm->cant_personas == 0)) { //TODO: llamo al destroyer y exit. todo va a tirar error al querer acceder a los ipcs
+                //TODO: poner msj de q salio el ultimo, mato todo
+                execlp(DESTROYER_EXE,DESTROYER_EXE,(char*) 0);
+                (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+string(" No se pudo ejecutar el destroyer cuando salió la última persona y el museo estaba cerrado."));
+                Logger::destroy();
+                exit(1);
+            }
             mutex.v();
         }
     }

@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
         Logger::destroy();
         exit(1);
     }
-    (Logger::getLogger())->escribir(MSJ,string("Clon de la persona ")+ppid+" quiere salir por la puerta"+puerta_salir+".");
+    (Logger::getLogger())->escribir(MSJ,string("Clon de la persona ")+ppid+" quiere salir por la puerta"+puerta_salir+"."); //TODO: ponerle el pid del clon
 
     //leo rta
     MENSAJE resp;
