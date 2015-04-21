@@ -56,7 +56,7 @@ void Logger::escribir(int type,std::string mensaje){
     tiempo << date << detail_time.tv_usec /1000 <<"ms "<< us.str() << "us";
     
     if (type == ERROR) {
-        msj = "-ERROR-";
+        msj = "- ERROR -";
     } else if (type == MSJ) {
         msj = "-MESSAGE-";
     }

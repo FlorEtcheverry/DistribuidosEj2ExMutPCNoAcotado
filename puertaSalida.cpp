@@ -110,13 +110,17 @@ int main(int argc, char** argv) {
                 exit(1);
             }
             (Logger::getLogger())->escribir(MSJ,string("Respondido a persona con pid ")+sender+" que puede salir del museo por la puerta "+puerta+".");
-            if ((!museo_shm->abierto) && (museo_shm->cant_personas == 0)) { //TODO: llamo al destroyer y exit. todo va a tirar error al querer acceder a los ipcs
+            if ((!museo_shm->abierto) && (museo_shm->cant_personas == 0)) { //llamo al destroyer y exit. todo va a tirar error al querer acceder a los ipcs
                 //TODO: poner msj de q salio el ultimo, mato todo
+                (Logger::getLogger())->escribir(MSJ,string("Va a salir la última persona por la puerta ")+puerta+". Muere todo------------");
                 execlp(DESTROYER_EXE,DESTROYER_EXE,(char*) 0);
                 (Logger::getLogger())->escribir(ERROR,std::string(strerror(errno))+string(" No se pudo ejecutar el destroyer cuando salió la última persona y el museo estaba cerrado."));
                 Logger::destroy();
                 exit(1);
             }
+            static char personas[MAX_DIG_PUERTA];
+            sprintf(personas,"%d",museo_shm->cant_personas);
+            (Logger::getLogger())->escribir(MSJ,string("Puerta de salida ")+puerta+": Ahora hay "+personas+" personas en el museo.");
             mutex.v();
         }
     }

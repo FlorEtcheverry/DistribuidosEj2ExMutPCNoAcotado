@@ -131,6 +131,9 @@ int main(int argc, char** argv) {
                 //pongo que hay lugar en el museo
                 sem_hay_lugar.v();
             }
+            static char personas[MAX_DIG_PUERTA];
+            sprintf(personas,"%d",museo_shm->cant_personas);
+            (Logger::getLogger())->escribir(MSJ,string("Puerta de entrada ")+puerta+": Ahora hay "+personas+" personas en el museo.");
             mutex.v();
         }
     }
