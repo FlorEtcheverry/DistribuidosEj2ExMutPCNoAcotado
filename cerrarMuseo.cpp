@@ -54,12 +54,14 @@ int main(int argc, char** argv) {
     mutex.p();
     museo_shm->abierto = 0;
     
+    (Logger::getLogger())->escribir(MSJ,"El museo se está cerrando, aviso a las personas que salgan.");
+    
     //mandar mensajes a la cant de personas en el museo
     for (int i=0;i<=(museo_shm->cant_personas);i++){
         
         MENSAJE msj;
         msj.mensaje = MUSEO_CERRADO;
-        msj.mtype = 0;
+        msj.mtype = 1;
         msj.senderPid = getpid();
         int res = msgsnd(cola_museo_cerrado,&msj,sizeof(MENSAJE)-sizeof(long),0);
         if (res == -1){

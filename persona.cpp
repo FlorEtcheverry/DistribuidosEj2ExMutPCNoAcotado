@@ -116,7 +116,7 @@ int main(int argc, char** argv) { //recibe nro puerta para entrar, nro puerta pa
             execlp(CLON_PERSONA_EXE,CLON_PERSONA_EXE,puerta_salir,(char*) 0);
             (Logger::getLogger())->escribir(ERROR,string(strerror(errno))+string(" No se pudo ejecutar el clon de la persona ")+pid+".");
             Logger::destroy();
-            exit(1); // TODO: el exec tira bad addres, no ejecuta. pero la persona no se muere (despues pide salir))
+            exit(1); // TODO: el exec tira bad addres, no ejecuta. DONE pero la persona no se muere (despues pide salir))
         }
         
         // (padre) persona

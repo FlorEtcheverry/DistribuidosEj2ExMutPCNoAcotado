@@ -60,7 +60,7 @@ void Logger::escribir(int type,std::string mensaje){
     } else if (type == MSJ) {
         msj = "-MESSAGE-";
     }
-    msj = proceso + " " + msj + " " + tiempo.str() + ": " + mensaje + "\n";
+    msj = " " + msj + " " + tiempo.str() + " - " + proceso + ": " + mensaje + "\n";
     write(log_file,msj.c_str(),sizeof(char)*msj.size());
     write(STDOUT_FILENO,msj.c_str(),sizeof(char)*msj.size());
     

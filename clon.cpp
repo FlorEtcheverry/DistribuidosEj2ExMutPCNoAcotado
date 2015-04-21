@@ -39,7 +39,7 @@ int main(int argc, char** argv) {
         exit(1);
     }
     
-    //leer 
+    //leer msj de que tiene que salir
     MENSAJE msj;
     ssize_t res = msgrcv(cola_museo_cerrado,&msj,sizeof(MENSAJE)-sizeof(long),0,0);
     if (res == -1) {//puede ser el fallo por el kill del otro proceso que salio del sleep
@@ -102,4 +102,3 @@ int main(int argc, char** argv) {
     Logger::destroy();
     return 0;
 }
-
